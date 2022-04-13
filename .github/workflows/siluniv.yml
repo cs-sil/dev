@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: test2
+name: WAS CI
 
 # Controls when the workflow will run
 on:
@@ -16,24 +16,12 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      RELEASE_NUMBER: $GITHUB_RUN_NUMBER
+      RELEASE_NUMBER: ${{ GITHUB_RUN_NUMBER }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-
-      - name: t1
-        run: |
-          echo $RELEASE_NUMBER
-          RELEASE_NUMBER=10
-          echo $RELEASE_NUMBER
-
-      - name: t2
-        run: |
-          echo $RELEASE_NUMBER
-          RELEASE_NUMBER=20
-          echo $RELEASE_NUMBER
         
       - name: Run a Gradle build with JDK
         uses: actions/setup-java@v3
