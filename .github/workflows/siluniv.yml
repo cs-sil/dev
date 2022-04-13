@@ -23,6 +23,9 @@ jobs:
       # Set release version number
       - name: Set release version number
         run: RELEASE_VERSION=$env:GITHUB_RUN_NUMBER
+
+      - name: echo env
+        run: echo $RELEASE_VERSION
         
       - name: Run a Gradle build with JDK
         uses: actions/setup-java@v3
