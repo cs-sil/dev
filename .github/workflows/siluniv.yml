@@ -22,7 +22,7 @@ jobs:
 
       # Set release version number
       - name: Set release version number
-        run: RELEASE_VERSION=$env:GITHUB_RUN_NUMBER
+        run: RELEASE_VERSION=${{ env.GITHUB_RUN_NUMBER }}
 
       - name: echo env
         run: echo $RELEASE_VERSION
