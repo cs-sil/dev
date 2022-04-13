@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      RELEASE_NUMBER: ${{ GITHUB_RUN_NUMBER }}
+      RELEASE_NUMBER: ${{ github.run_number }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
