@@ -63,3 +63,17 @@ jobs:
 
       - name: Build and push
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/m-dev:tomcat_latest
+
+      - name: Get GKE Credentials
+        uses: google-github-actions/get-gke-credentials@v0
+        with:
+          cluster_name: siluniv
+          location: us-central1-c
+          project_id: deft-envoy-346612
+          credentials: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      
+      - name: Get GKE Cluster pod
+        run: kubectl get pod -o wide
+
+      - name: Deployment Rollout
+        run: kubectl rollout restart deploy was-deployment
