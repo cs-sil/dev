@@ -19,6 +19,17 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+
+      - name: t1
+        run: |
+          RN=10
+          echo $RN
+
+      - name: t2
+        run: |
+          echo $RN
+          RN=20
+          echo $RN
         
       - name: Run a Gradle build with JDK
         uses: actions/setup-java@v3
