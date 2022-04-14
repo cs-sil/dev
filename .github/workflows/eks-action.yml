@@ -37,4 +37,5 @@ jobs:
 
       - name: test
         run: |
+          aws eks update-kubeconfig --region sa-east-1 --name siluniv
           kubectl get pod -o wide
