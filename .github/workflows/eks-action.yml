@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: EKS-WAS-CI
 
 # Controls when the workflow will run
 on:
@@ -67,10 +67,10 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: sa-east-1
+          aws-region: ${{ secrets.AWS_REGION_NAME }}
 
       - name: Update kubeconfig
-        run: aws eks update-kubeconfig --region sa-east-1 --name siluniv
+        run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION_NAME }} --name ${{ secrets.AWS_USER_NAME }}
 
       - name: Deployment Rollout
         run: kubectl rollout restart deploy was-deployment
@@ -79,4 +79,4 @@ jobs:
         run: mv ./build/libs/my-spring-board-0.0.1-SNAPSHOT.war ./build/libs/backup-`date +%Y%m%d%H%M%S`.war 
 
       - name: S3 Upload
-        run: aws s3 cp ./build/libs/*.war s3://sil-bucket-2
+        run: aws s3 cp ./build/libs/*.war s3://${{ secrets.AWS_S3_BUCKET_NAME }}
