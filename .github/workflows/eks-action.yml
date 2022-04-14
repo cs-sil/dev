@@ -73,7 +73,7 @@ jobs:
         run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION_NAME }} --name ${{ secrets.AWS_USER_NAME }}
 
       - name: Deployment Rollout
-        run: kubectl rollout restart deploy was-deployment
+        run: kubectl rollout restart deploy ${{ secrets.K8S_WAS_DEPLOYMENT }}
 
       - name: Rename file
         run: mv ./build/libs/my-spring-board-0.0.1-SNAPSHOT.war ./build/libs/backup-`date +%Y%m%d%H%M%S`.war 
