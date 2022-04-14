@@ -23,6 +23,45 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      - name: Run a Gradle build with JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'gradle'
+      
+      - name: Give permission to a gradlew file
+        run: chmod +x ./gradlew
+      
+      - name: Source build to gradle
+        run: |
+          ./gradlew build --no-daemon
+          ls -al ./build/libs
+          cp ./build/libs/*.war ./Docker/
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Check Docker deamon
+        run: docker ps
+
+      - name: Docker image builld
+        run: |
+          cd ./Docker
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/m-dev:tomcat_v$RELEASE_NUMBER .
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/m-dev:tomcat_v$RELEASE_NUMBER ${{ secrets.DOCKERHUB_USERNAME }}/m-dev:tomcat_latest
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/m-dev:tomcat_v$RELEASE_NUMBER
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/m-dev:tomcat_latest
+
       - name: Configure AWS credentials from Production account
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -30,12 +69,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: sa-east-1
 
-      - name: aws s3 ls
-        run: |
-          echo "test" > a.txt
-          aws s3 cp a.txt s3://sil-bucket-2
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region sa-east-1 --name siluniv
 
-      - name: test
-        run: |
-          aws eks update-kubeconfig --region sa-east-1 --name siluniv
-          kubectl get pod -o wide
+      - name: Deployment Rollout
+        run: kubectl rollout restart deploy was-deployment
+
+      - name: Rename file
+        run: mv ./build/libs/my-spring-board-0.0.1-SNAPSHOT.war ./build/libs/backup-`date +%Y%m%d%H%M%S`.war 
+
+      - name: S3 Upload
+        run: aws s3 cp ./build/libs/*.war s3://sil-bucket-2
