@@ -37,4 +37,4 @@ jobs:
 
       - name: test
         run: |
-          eksctl -h
+          kubectl get pod -o wide
